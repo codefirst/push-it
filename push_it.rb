@@ -1,5 +1,6 @@
 require 'sinatra'
 require 'houston'
+require 'json'
 
 class PushIt < Sinatra::Base
   attr_reader :apn_certificate, :apn_environment
@@ -20,14 +21,13 @@ class PushIt < Sinatra::Base
   end
 
   post '/message' do
+    params = JSON.parse(request.body.read)
     status 503 and return unless client
+    status 503 and return unless params["payload"]
 
-    param :payload, String, empty: false
-    param :tokens, Array, empty: false
+    tokens = params["tokens"] || []
 
-    tokens = params[:tokens] || []
-
-    options = JSON.parse(params[:payload])
+    options = params["payload"]
     options[:alert] = options["aps"]["alert"]
     options[:badge] = options["aps"]["badge"]
     options[:sound] = options["aps"]["sound"]

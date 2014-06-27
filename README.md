@@ -1,5 +1,5 @@
 # PushIt
-Super light-weight Apple Push Notification Service.
+A super light-weight Apple push notification service.
 
 ## Feature
 
@@ -21,17 +21,18 @@ If you use production .pem:
 
 ## How to Push
 
-    $ curl -XPOST https://yourapp.herokuapp.com/messages \
+    $ curl -XPOST https://yourapp.herokuapp.com/message \
       -H 'Content-Type: application/json' \
       -d '{
         "tokens":["xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx"],
         "payload": {
-           "apns" : {
-             "alert" : "Hello world",
-             "badge" : 0,
-             "sound" : "default"
-           }
-        }"
+          "aps" : {
+            "alert" : "Hello world",
+            "badge" : 0,
+            "sound" : "default",
+          },
+          "my_data" : "my_string"
+        }
       }'
 
 ## Acknowledge
