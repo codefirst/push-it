@@ -19,7 +19,7 @@ If you use production .pem:
 
     $ heroku config:add APN_ENVIRONMENT=production
 
-## How to pass .pem via enviroment variables
+## How to pass .pem via environment variables
 
 ### Local
 
