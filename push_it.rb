@@ -3,11 +3,13 @@ require 'houston'
 require 'json'
 
 class PushIt < Sinatra::Base
+  register Sinatra::Initializers
   attr_reader :apn_certificate, :apn_environment
 
-  def initialize(options = {}, &block)
-    @apn_certificate = options[:apn_certificate] || ENV['APN_CERTIFICATE'] || 'apple_push_notification.pem'
-    @apn_environment = options[:apn_environment] || ENV['APN_ENVIRONMENT'] || 'development'
+  def initialize
+    super()
+    @apn_certificate = ENV['APN_CERTIFICATE'] || 'apple_push_notification.pem'
+    @apn_environment = ENV['APN_ENVIRONMENT'] || 'development'
   end
 
   before do
@@ -48,7 +50,7 @@ class PushIt < Sinatra::Base
   private
 
   def client
-    begin
+    @client ||= begin
       return nil unless apn_certificate and ::File.exist?(apn_certificate)
 
       client = case apn_environment.to_sym

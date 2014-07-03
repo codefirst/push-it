@@ -27,13 +27,25 @@ If you use production .pem:
         "tokens":["xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx xxxxxxxx"],
         "payload": {
           "aps" : {
-            "alert" : "Hello world",
+            "alert" : "Yo",
             "badge" : 0,
             "sound" : "default",
           },
           "my_data" : "my_string"
         }
       }'
+
+## How to pass .pem via enviroment variables
+
+### Local
+
+    $ export APN_CERTIFICATE_BASE64=`bundle exec rake APN_CERTIFICATE=/path/to/aps_developer_identity.pem`
+    $ PORT=4567 bundle exec foreman start
+
+### Heroku
+
+    $ heroku config:add APN_CERTIFICATE_BASE64=`bundle exec rake APN_CERTIFICATE=/path/to/aps_developer_identity.pem`
+    $ heroku config:add APN_CERTIFICATE=tmp/apple_push_notification.pem
 
 ## Acknowledge
 This code is extracted from [Helios](http://helios.io/) by Mattt Thompson.
