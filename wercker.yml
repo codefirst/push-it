@@ -1,0 +1,5 @@
+box: wercker/rvm
+deploy:
+    steps:
+        - heroku-deploy
+
