@@ -30,13 +30,15 @@ class PushIt < Sinatra::Base
     tokens = params["tokens"] || []
 
     options = params["payload"]
-    options[:alert] = options["aps"]["alert"]
-    options[:badge] = options["aps"]["badge"]
-    options[:sound] = options["aps"]["sound"]
+    alert = options["aps"]["alert"]
+    badge = options["aps"]["badge"]
+    sound = options["aps"]["sound"]
     options.delete("aps")
 
     begin
-      notifications = tokens.collect{|token| Houston::Notification.new(options.update({device: token}))}
+      notifications = tokens.collect do |token|
+        Houston::Notification.new(options.update({device: token, alert: alert, badge: badge, sound: sound}))
+      end
       client.push(*notifications)
 
       status 204
