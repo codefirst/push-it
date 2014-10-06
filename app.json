@@ -14,8 +14,8 @@
       "required": true
     },
     "APN_CERTIFICATE_BASE64": {
-      "description": ".pem content as BASE64, paste the command result",
-      "value": "`bundle exec rake APN_CERTIFICATE=/path/to/aps_developer_identity.pem`",
+      "description": ".pem content as BASE64, paste the command result: `bundle exec rake APN_CERTIFICATE=/path/to/aps_developer_identity.pem`",
+      "value": "",
       "required": true
     }
   }
