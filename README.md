@@ -1,6 +1,10 @@
 # PushIt
 
+[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
+
 [![wercker status](https://app.wercker.com/status/183fcb9b8bc0678d9571d1fa8d29ff59/s "wercker status")](https://app.wercker.com/project/bykey/183fcb9b8bc0678d9571d1fa8d29ff59)
+
+## Overview
 
 A super light-weight Apple push notification service.
 

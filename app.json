@@ -1,0 +1,23 @@
+{
+  "name": "PushIt",
+  "description": "A super light-weight Apple push notification service",
+  "repository": "https://github.com/codefirst/push-it/",
+  "env": {
+    "APN_ENVIRONMENT": {
+      "description": "environment of APN.",
+      "value": "production",
+      "required": true
+    },
+    "APN_CERTIFICATE": {
+      "description": ".pem location. If you use ENV, keep tmp/apple_push_notification.pem",
+      "value": "tmp/apple_push_notification.pem",
+      "required": true
+    },
+    "APN_CERTIFICATE_BASE64": {
+      "description": ".pem content as BASE64, paste the command result",
+      "value": "`bundle exec rake APN_CERTIFICATE=/path/to/aps_developer_identity.pem`",
+      "required": true
+    }
+  }
+}
+
