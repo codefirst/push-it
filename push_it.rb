@@ -33,11 +33,22 @@ class PushIt < Sinatra::Base
     alert = options["aps"]["alert"]
     badge = options["aps"]["badge"]
     sound = options["aps"]["sound"]
+    category = options["aps"]["category"]
+    expiry = options["aps"]["expiry"]
+    id = options["aps"]["id"]
+    priority = options["aps"]["priority"]
+    content_available = options["aps"]["content_available"] || options["aps"]["content-available"]
     options.delete("aps")
 
     begin
       notifications = tokens.collect do |token|
-        Houston::Notification.new(options.update({device: token, alert: alert, badge: badge, sound: sound}))
+        notification = Houston::Notification.new(options.update({device: token, alert: alert, badge: badge, sound: sound}))
+        notification.category = category if category
+        notification.expiry = expiry if expiry
+        notification.id = id if id
+        notification.priority = priority if priority
+        notification.content_available = 1 if content_available
+        notification
       end
       client.push(*notifications)
 
