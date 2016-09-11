@@ -1,19 +1,39 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    commander (4.3.4)
-      highline (~> 1.7.2)
+    celluloid (0.17.3)
+      celluloid-essentials
+      celluloid-extras
+      celluloid-fsm
+      celluloid-pool
+      celluloid-supervision
+      timers (>= 4.1.1)
+    celluloid-essentials (0.20.5)
+      timers (>= 4.1.1)
+    celluloid-extras (0.20.5)
+      timers (>= 4.1.1)
+    celluloid-fsm (0.20.5)
+      timers (>= 4.1.1)
+    celluloid-io (0.17.3)
+      celluloid (>= 0.17.2)
+      nio4r (>= 1.1)
+      timers (>= 4.1.1)
+    celluloid-pool (0.20.5)
+      timers (>= 4.1.1)
+    celluloid-supervision (0.20.6)
+      timers (>= 4.1.1)
     dotenv (0.11.1)
       dotenv-deployment (~> 0.0.2)
     dotenv-deployment (0.0.2)
     foreman (0.74.0)
       dotenv (~> 0.11.1)
       thor (~> 0.19.1)
-    highline (1.7.2)
-    houston (2.2.0)
-      commander (~> 4.1)
-      json
-    json (1.8.2)
+    hitimes (1.2.4)
+    http-2 (0.8.2)
+    lowdown (1.0.0)
+      celluloid-io (>= 0.17.3)
+      http-2 (>= 0.8)
+    nio4r (1.2.1)
     puma (3.6.0)
     rack (1.6.4)
     rack-protection (1.5.3)
@@ -26,13 +46,15 @@ GEM
     sinatra-initializers (0.1.4)
     thor (0.19.1)
     tilt (1.4.1)
+    timers (4.1.1)
+      hitimes
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   foreman
-  houston (= 2.2.0)
+  lowdown
   puma
   rake
   sinatra
