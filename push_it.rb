@@ -55,7 +55,6 @@ class PushIt < Sinatra::Base
         client.connect do |group|
           notifications.each do |notification|
             group.send_notification(notification) do |response|
-              p response
             end
           end
         end
