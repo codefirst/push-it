@@ -1,5 +1,5 @@
 require 'sinatra'
-require 'houston'
+require 'lowdown'
 require 'json'
 
 class PushIt < Sinatra::Base
@@ -42,15 +42,21 @@ class PushIt < Sinatra::Base
 
     begin
       notifications = tokens.collect do |token|
-        notification = Houston::Notification.new(options.update({device: token, alert: alert, badge: badge, sound: sound}))
-        notification.category = category if category
-        notification.expiry = expiry if expiry
+        notification = Lowdown::Notification.new(token: token, payload: { alert: alert, badge: badge, sound: sound })
+        notification.payload["category"] = category if category
+        notification.expiration = expiry if expiry
         notification.id = id if id
         notification.priority = priority if priority
-        notification.content_available = 1 if content_available
+        notification.payload["content-available"] = 1 if content_available
         notification
       end
-      client.push(*notifications)
+
+      client.connect do |group|
+        notifications.each do |notification|
+          group.send_notification(notification) do |response|
+          end
+        end
+      end
 
       status 204
     rescue => error
@@ -62,18 +68,19 @@ class PushIt < Sinatra::Base
 
   private
 
+  
+
   def client
     @client ||= begin
       return nil unless apn_certificate and ::File.exist?(apn_certificate)
+      cert = File.read(apn_certificate)
 
       client = case apn_environment.to_sym
                when :development
-                 Houston::Client.development
+                 Lowdown::Client.production(false, certificate: cert)
                when :production
-                 Houston::Client.production
+                 Lowdown::Client.production(true, certificate: cert)
                end
-
-      client.certificate = ::File.read(apn_certificate)
 
       return client
     rescue
