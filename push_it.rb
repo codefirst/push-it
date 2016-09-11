@@ -42,7 +42,7 @@ class PushIt < Sinatra::Base
 
     begin
       notifications = tokens.collect do |token|
-        notification = Lowdown::Notification.new(token: token, payload: { alert: alert, badge: badge, sound: sound })
+        notification = Lowdown::Notification.new(token: token.gsub(/[< >]/, ''), payload: { alert: alert, badge: badge, sound: sound })
         notification.payload["category"] = category if category
         notification.expiration = expiry if expiry
         notification.id = id if id
