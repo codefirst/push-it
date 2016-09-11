@@ -17,14 +17,14 @@ class PushIt < Sinatra::Base
   end
 
   head '/message' do
-    status 503 and return unless client
+    status 503 and return unless clients and !clients.empty?
 
     status 204
   end
 
   post '/message' do
     params = JSON.parse(request.body.read)
-    status 503 and return unless client
+    status 503 and return unless clients and !clients.empty?
     status 503 and return unless params["payload"]
 
     tokens = params["tokens"] || []
@@ -51,9 +51,12 @@ class PushIt < Sinatra::Base
         notification
       end
 
-      client.connect do |group|
-        notifications.each do |notification|
-          group.send_notification(notification) do |response|
+      clients.each do |client|
+        client.connect do |group|
+          notifications.each do |notification|
+            group.send_notification(notification) do |response|
+              p response
+            end
           end
         end
       end
@@ -69,22 +72,30 @@ class PushIt < Sinatra::Base
   private
 
   
-
-  def client
-    @client ||= begin
+  def cert
+    @cert ||= begin
       return nil unless apn_certificate and ::File.exist?(apn_certificate)
-      cert = File.read(apn_certificate)
+      File.read(apn_certificate)
+    end
+  end
 
-      client = case apn_environment.to_sym
-               when :development
-                 Lowdown::Client.production(false, certificate: cert)
-               when :production
-                 Lowdown::Client.production(true, certificate: cert)
-               end
-
-      return client
+  def clients
+    @clients ||= begin
+      envs = apn_environment.split
+      [
+        envs.include?('production') ? client_production : nil,
+        envs.include?('development') ? client_development : nil,
+      ].compact
     rescue
       return nil
     end
+  end
+
+  def client_development
+    Lowdown::Client.production(false, certificate: cert)
+  end
+
+  def client_production
+    Lowdown::Client.production(true, certificate: cert)
   end
 end
