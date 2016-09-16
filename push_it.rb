@@ -1,5 +1,5 @@
 require 'sinatra'
-require 'houston'
+require 'lowdown'
 require 'json'
 
 class PushIt < Sinatra::Base
@@ -17,14 +17,14 @@ class PushIt < Sinatra::Base
   end
 
   head '/message' do
-    status 503 and return unless client
+    status 503 and return unless clients and !clients.empty?
 
     status 204
   end
 
   post '/message' do
     params = JSON.parse(request.body.read)
-    status 503 and return unless client
+    status 503 and return unless clients and !clients.empty?
     status 503 and return unless params["payload"]
 
     tokens = params["tokens"] || []
@@ -42,15 +42,23 @@ class PushIt < Sinatra::Base
 
     begin
       notifications = tokens.collect do |token|
-        notification = Houston::Notification.new(options.update({device: token, alert: alert, badge: badge, sound: sound}))
-        notification.category = category if category
-        notification.expiry = expiry if expiry
+        notification = Lowdown::Notification.new(token: token.gsub(/[< >]/, ''), payload: { alert: alert, badge: badge, sound: sound })
+        notification.payload["category"] = category if category
+        notification.expiration = expiry if expiry
         notification.id = id if id
         notification.priority = priority if priority
-        notification.content_available = 1 if content_available
+        notification.payload["content-available"] = 1 if content_available
         notification
       end
-      client.push(*notifications)
+
+      clients.each do |client|
+        client.connect do |group|
+          notifications.each do |notification|
+            group.send_notification(notification) do |response|
+            end
+          end
+        end
+      end
 
       status 204
     rescue => error
@@ -62,22 +70,31 @@ class PushIt < Sinatra::Base
 
   private
 
-  def client
-    @client ||= begin
+  
+  def cert
+    @cert ||= begin
       return nil unless apn_certificate and ::File.exist?(apn_certificate)
+      File.read(apn_certificate)
+    end
+  end
 
-      client = case apn_environment.to_sym
-               when :development
-                 Houston::Client.development
-               when :production
-                 Houston::Client.production
-               end
-
-      client.certificate = ::File.read(apn_certificate)
-
-      return client
+  def clients
+    @clients ||= begin
+      envs = apn_environment.split
+      [
+        envs.include?('production') ? client_production : nil,
+        envs.include?('development') ? client_development : nil,
+      ].compact
     rescue
       return nil
     end
+  end
+
+  def client_development
+    Lowdown::Client.production(false, certificate: cert)
+  end
+
+  def client_production
+    Lowdown::Client.production(true, certificate: cert)
   end
 end
