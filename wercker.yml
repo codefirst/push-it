@@ -1,4 +1,7 @@
 box: ruby:2.3
+build:
+  steps:
+    - bundle-install
 deploy:
   steps:
     - heroku-deploy:
